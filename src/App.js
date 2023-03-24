@@ -1,6 +1,6 @@
 import "./App.css";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import EditorPage from "./Pages/Editor";
+import NewArticlePage from "./Pages/NewArticle";
 import HomePage from "./Pages/HomePage";
 function App() {
   return (
@@ -9,7 +9,7 @@ function App() {
         Hello This is a Blog application by Kubekode
         <Routes>
            <Route exact path="/" Component={HomePage} />
-           <Route path="/new-article" Component={EditorPage} />
+           <Route path="/new-article" Component={NewArticlePage} />
         </Routes>
       </Router>
     </div>
