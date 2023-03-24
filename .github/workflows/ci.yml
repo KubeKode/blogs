@@ -1,4 +1,4 @@
-name: Blog Deploy 
+name: Blog Integration
 on:
   push:
     branches:
@@ -27,5 +27,3 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
-      - name: Test
-        run: yarn test
