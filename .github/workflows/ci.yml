@@ -1,4 +1,4 @@
-name: Blog Deploy 
+name: Blog Integration
 on:
   push:
     branches:
