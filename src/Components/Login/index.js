@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { firebaseConfig } from "../../config/firebase.auth";
 
-const app = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 const provider = new GithubAuthProvider();
 console.log(firebaseConfig)
 function Login() {
