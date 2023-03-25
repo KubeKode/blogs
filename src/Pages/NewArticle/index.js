@@ -1,36 +1,29 @@
 import MDEditor from "../../Components/MDEditor";
 import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import { isLoggedIn } from "../../util/auth";
 
-// Create NewArticlePage component
 const NewArticlePage = () => {
+  const [article, setArticle] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("isLoggedIn");
-    if (token) {
-      setIsAuthenticated(true);
-    }
+    const checkAuth = () => {
+      if (isLoggedIn()) {
+        setIsAuthenticated(true);
+      }
+    };
+    checkAuth();
   }, []);
-  const [article, setArticle] = useState("");
+  if (!isAuthenticated) {
+    return <Navigate replace to="/login" />;
+  }
 
-  // Create handler function to update article state and log it to the console
-  const handler = (data) => {
+  const handleArticleChange = (data) => {
     setArticle(data);
     console.log(article);
   };
 
-  // Render MDEditor component with handler function passed as a prop
-  if (!isAuthenticated) {
-    // Redirect to the login page if the user is not authenticated
-    return <Navigate replace to="/login" />;
-    
-  } else {
-    return (
-      <div>
-        <MDEditor passArticle={handler} />
-      </div>
-    );
-  }
+  return <MDEditor passArticle={handleArticleChange} />;
 };
 export default NewArticlePage;

@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        Hello This is a Blog application by Kubekode
+        <h1>Hello This is a Blog application by Kubekode</h1>
         <Routes>
           <Route exact path="/" Component={HomePage} />
           <Route path="/new-article" Component={NewArticlePage} />
