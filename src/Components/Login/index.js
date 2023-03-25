@@ -1,59 +1,50 @@
-import React, { useEffect } from "react";
-import {secrets} from "../../config/config"
-const CLIENT_ID = secrets.client_id
-const REDIRECT_URI = secrets.redirect_uri
-const SCOPES = "user";
+import { initializeApp } from "firebase/app";
+import {
+  GithubAuthProvider,
+  getAuth,
+  signInWithPopup,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { firebaseConfig } from "../../config/firebase.auth";
 
-function LoginPage() {
+const app = initializeApp(firebaseConfig);
+const provider = new GithubAuthProvider();
+console.log(firebaseConfig)
+function Login() {
+  const navigate = useNavigate();
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
-
-    if (code) {
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          client_id: CLIENT_ID,
-          client_secret: secrets.client_secret,
-          code: code,
-          redirect_uri: REDIRECT_URI,
-        }),
-      };
-
-      fetch("https://github.com/login/oauth/access_token", requestOptions)
-        .then((response) => response.text())
-        .then((result) => {
-          const accessToken = new URLSearchParams(result).get("access_token");
-          localStorage.setItem("accessToken", accessToken);
-          window.location.href = "/#/new-article";
-          localStorage.setItem("isLoggedIn", true)
-
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          localStorage.setItem("isLoggedIn", false)
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        localStorage.setItem("isLoggedIn", true);
+        navigate("/new-article");
+      } else {
+        signInWithPopup(auth, provider).catch((error) => {
+          if (error.code === "auth/cancelled-popup-request") {
+            console.log("Popup window was closed");
+          } else {
+            console.error(error);
+          }
         });
-    } else {
-      window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}`;
-    }
-  }, []);
+      }
+    });
+
+    // Unsubscribe from the listener when the component unmounts
+    return () => {
+      unsubscribe();
+    };
+  }, [navigate]);
 
   return (
     <div>
       <h1>Login</h1>
       <p>Please click the button below to authenticate with GitHub.</p>
-      <button
-        onClick={() =>
-          (window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPES}`)
-        }
-      >
+      <button onClick={() => signInWithPopup(getAuth(), provider)}>
         Login with GitHub
       </button>
     </div>
   );
 }
-
-export default LoginPage;
+export default Login;
